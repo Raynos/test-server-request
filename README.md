@@ -12,28 +12,18 @@ var makeRequest = require('test-server-request');
 var App = require('../app.js');
 
 /* custom app specific logic to spin up your http server.
-    Remember to hook custom destroy into http server close.
     probably put this function in a single place.
 */
-function allocServer(callback) {
-    App.createServer(function (err, app) {
-        if (err) {
-            return callback(err);
-        }
+function allocServer() {
+    var myApp = App();
 
-        var server = app.httpServer;
-        var $close = server.close;
-        server.close = function fakeClose() {
-            app.destroy();
-            return $close.apply(this, arguments);
-        }
-
-        callback(null, server);
-    })
+    // return a http server
+    return myApp.httpServer;
 }
 
 test('make a request', function t(assert) {
-    makeRequest(allocServer, {
+    var server = allocServer();    
+    makeRequest(server, {
         url: '/health'
     }, function onResponse(err, resp) {
         assert.ifError(err);
@@ -41,6 +31,7 @@ test('make a request', function t(assert) {
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body, 'OK');
 
+        server.close();
         assert.end();
     });
 });
