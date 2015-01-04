@@ -17,6 +17,8 @@ var App = require('../app.js');
 function allocServer() {
     var myApp = App();
 
+    myApp.httpServer.listen(0);
+
     // return a http server
     return myApp.httpServer;
 }
