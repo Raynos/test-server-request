@@ -15,8 +15,9 @@ function makeRequest(server, reqOpts, cb) {
 
     function onPort() {
         var port = server.address().port;
+        var host = server.address().address || 'localhost';
 
-        var url = 'http://localhost:' + port;
+        var url = 'http://' + host + ':' + port;
         reqOpts.url = url + reqOpts.url;
 
         request(reqOpts, cb);
